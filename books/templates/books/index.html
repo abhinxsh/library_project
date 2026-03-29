@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Library</title>
+</head>
+<body>
+
+<h1>📚 Library System</h1>
+
+<form method="GET">
+    <input type="text" name="q" placeholder="Search..." value="{{ query }}">
+    <button type="submit">Search</button>
+</form>
+
+<h2>Add Book</h2>
+<form method="POST" action="/add/">
+    {% csrf_token %}
+    <input name="title" placeholder="Title" required>
+    <input name="author" placeholder="Author" required>
+    <input name="quantity" type="number" required>
+    <button>Add</button>
+</form>
+
+<h2>Books</h2>
+<ul>
+{% for book in books %}
+    <li>
+        {{ book.title }} - {{ book.author }} ({{ book.quantity }})
+
+        <form method="POST" action="/update/{{ book.id }}/">
+            {% csrf_token %}
+            <input name="title" value="{{ book.title }}">
+            <input name="author" value="{{ book.author }}">
+            <input name="quantity" value="{{ book.quantity }}">
+            <button>Update</button>
+        </form>
+
+        <a href="/delete/{{ book.id }}/">Delete</a>
+    </li>
+{% endfor %}
+</ul>
+
+</body>
+</html>
