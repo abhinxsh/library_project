@@ -3,7 +3,8 @@ from . import views
 
 urlpatterns = [
     path('', views.index, name='index'),
-    path('add/', views.add_book, name='add'),
-    path('update/<int:id>/', views.update_book, name='update'),
-    path('delete/<int:id>/', views.delete_book, name='delete'),
+
+    # API endpoints
+    path('api/books/', views.api_books, name='api_books'),
+    path('api/books/<int:id>/', views.api_book_detail, name='api_book_detail'),
 ]

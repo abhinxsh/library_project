@@ -1,51 +1,59 @@
-
-
-# Create your views here.
-# books/views.py
-from django.shortcuts import render, redirect, get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+import json
 from .models import Book
 
+
+# ── Frontend Page ───────────────────────────────────────
 def index(request):
-    query = request.GET.get('q', '')
-    
-    if query:
-        books = Book.objects.filter(
-            title__icontains=query
-        ) | Book.objects.filter(
-            author__icontains=query
+    return render(request, 'books/index.html')
+
+
+# ── API: GET + POST ─────────────────────────────────────
+@csrf_exempt
+def api_books(request):
+    if request.method == "GET":
+        books = list(Book.objects.values())
+        return JsonResponse(books, safe=False)
+
+    if request.method == "POST":
+        data = json.loads(request.body)
+
+        book = Book.objects.create(
+            title=data.get("title", ""),
+            author=data.get("author", ""),
+            quantity=data.get("quantity", 0)
         )
-    else:
-        books = Book.objects.all().order_by('-id')
 
-    return render(request, 'books/index.html', {
-        'books': books,
-        'query': query
-    })
-
-
-def add_book(request):
-    if request.method == "POST":
-        title = request.POST['title']
-        author = request.POST['author']
-        quantity = int(request.POST['quantity'])
-
-        Book.objects.create(title=title, author=author, quantity=quantity)
-    return redirect('index')
+        return JsonResponse({
+            "id": book.id,
+            "title": book.title,
+            "author": book.author,
+            "quantity": book.quantity
+        })
 
 
-def update_book(request, id):
-    book = get_object_or_404(Book, id=id)
+# ── API: PUT + DELETE ───────────────────────────────────
+@csrf_exempt
+def api_book_detail(request, id):
+    try:
+        book = Book.objects.get(id=id)
+    except Book.DoesNotExist:
+        return JsonResponse({"error": "Book not found"}, status=404)
 
-    if request.method == "POST":
-        book.title = request.POST['title']
-        book.author = request.POST['author']
-        book.quantity = int(request.POST['quantity'])
+    if request.method == "PUT":
+        data = json.loads(request.body)
+
+        book.title = data.get("title", book.title)
+        book.author = data.get("author", book.author)
+        book.quantity = data.get("quantity", book.quantity)
         book.save()
 
-    return redirect('index')
+        return JsonResponse({"status": "updated"})
 
+    if request.method == "DELETE":
+        book.delete()
+        return JsonResponse({"status": "deleted"})
 
-def delete_book(request, id):
-    book = get_object_or_404(Book, id=id)
-    book.delete()
-    return redirect('index')
+    return JsonResponse({"error": "Invalid method"}, status=405)
