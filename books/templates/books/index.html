@@ -427,14 +427,16 @@
 <div id="toast"></div>
 
 <script>
-  // ── Data ──────────────────────────────────────────────
-  let books = JSON.parse(localStorage.getItem('lib_books') || '[]');
-  let nextId = parseInt(localStorage.getItem('lib_next') || '1');
+  // ── State ─────────────────────────────────────────────
+  let books = [];
   let deleteTarget = null;
 
-  function save() {
-    localStorage.setItem('lib_books', JSON.stringify(books));
-    localStorage.setItem('lib_next', String(nextId));
+  // ── CSRF ──────────────────────────────────────────────
+  function getCSRFToken() {
+    return document.cookie
+      .split('; ')
+      .find(row => row.startsWith('csrftoken'))
+      ?.split('=')[1];
   }
 
   // ── Toast ─────────────────────────────────────────────
@@ -445,33 +447,103 @@
     setTimeout(() => el.classList.remove('show'), 2600);
   }
 
+  // ── API Calls ─────────────────────────────────────────
+  async function loadBooks() {
+    const res = await fetch('/api/books/');
+    books = await res.json();
+    render();
+  }
+
+  async function addBook() {
+    const title = document.getElementById('new-title').value.trim();
+    const author = document.getElementById('new-author').value.trim();
+    const quantity = parseInt(document.getElementById('new-qty').value) || 0;
+
+    if (!title || !author) {
+      toast('⚠️ Title and author required');
+      return;
+    }
+
+    await fetch('/api/books/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      },
+      body: JSON.stringify({ title, author, quantity })
+    });
+
+    await loadBooks();
+
+    document.getElementById('new-title').value = '';
+    document.getElementById('new-author').value = '';
+    document.getElementById('new-qty').value = '';
+
+    toast('✅ Book added!');
+  }
+
+  async function updateBook(id) {
+    const title = document.getElementById(`et-${id}`).value.trim();
+    const author = document.getElementById(`ea-${id}`).value.trim();
+    const quantity = parseInt(document.getElementById(`eq-${id}`).value) || 0;
+
+    await fetch(`/api/books/${id}/`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      },
+      body: JSON.stringify({ title, author, quantity })
+    });
+
+    await loadBooks();
+    toast('✏️ Book updated!');
+  }
+
+  async function deleteBook(id) {
+    await fetch(`/api/books/${id}/`, {
+      method: 'DELETE',
+      headers: {
+        'X-CSRFToken': getCSRFToken()
+      }
+    });
+
+    await loadBooks();
+    toast('🗑️ Book removed.');
+  }
+
   // ── Stats ─────────────────────────────────────────────
   function updateStats(list) {
     document.getElementById('stat-titles').textContent = list.length;
-    document.getElementById('stat-copies').textContent = list.reduce((s,b)=>s+b.quantity,0);
-    document.getElementById('stat-authors').textContent = new Set(list.map(b=>b.author.trim().toLowerCase())).size;
+    document.getElementById('stat-copies').textContent =
+      list.reduce((s, b) => s + b.quantity, 0);
+    document.getElementById('stat-authors').textContent =
+      new Set(list.map(b => b.author.toLowerCase())).size;
   }
 
   // ── Render ────────────────────────────────────────────
   function render(filter = '') {
     const q = filter.toLowerCase();
     const filtered = books.filter(b =>
-      b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q)
+      b.title.toLowerCase().includes(q) ||
+      b.author.toLowerCase().includes(q)
     );
+
     updateStats(filtered);
 
     const list = document.getElementById('book-list');
 
     if (!filtered.length) {
-      list.innerHTML = `<div class="empty">
-        <div class="big">${filter ? '🔍' : '📭'}</div>
-        <p>${filter ? 'No books match your search.' : 'Your library is empty. Add a book to get started!'}</p>
-      </div>`;
+      list.innerHTML = `
+        <div class="empty">
+          <div class="big">${filter ? '🔍' : '📭'}</div>
+          <p>${filter ? 'No books match your search.' : 'Your library is empty.'}</p>
+        </div>`;
       return;
     }
 
     list.innerHTML = filtered.map(b => `
-      <div class="book-card" id="card-${b.id}">
+      <div class="book-card">
         <div class="book-main">
           <div class="book-spine"></div>
           <div class="book-info">
@@ -480,30 +552,17 @@
           </div>
           <div class="book-qty">📖 ${b.quantity}</div>
           <div class="book-actions">
-            <button class="btn btn-sm btn-ghost" title="Edit" onclick="toggleEdit(${b.id})">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-              Edit
-            </button>
-            <button class="btn btn-sm btn-danger" title="Delete" onclick="askDelete(${b.id})">
-              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
-            </button>
+            <button class="btn btn-sm btn-ghost" onclick="toggleEdit(${b.id})">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="askDelete(${b.id})">Delete</button>
           </div>
         </div>
+
         <div class="edit-panel" id="edit-${b.id}">
           <div class="edit-row">
-            <div class="form-group">
-              <label>Title</label>
-              <input id="et-${b.id}" value="${esc(b.title)}" />
-            </div>
-            <div class="form-group">
-              <label>Author</label>
-              <input id="ea-${b.id}" value="${esc(b.author)}" />
-            </div>
-            <div class="form-group">
-              <label>Quantity</label>
-              <input id="eq-${b.id}" type="number" min="0" value="${b.quantity}" />
-            </div>
-            <button class="btn btn-sm btn-save" style="margin-bottom:1px" onclick="saveEdit(${b.id})">Save</button>
+            <input id="et-${b.id}" value="${esc(b.title)}" />
+            <input id="ea-${b.id}" value="${esc(b.author)}" />
+            <input id="eq-${b.id}" type="number" value="${b.quantity}" />
+            <button class="btn btn-sm btn-save" onclick="updateBook(${b.id})">Save</button>
           </div>
         </div>
       </div>
@@ -511,24 +570,14 @@
   }
 
   function esc(s) {
-    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    return s
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
   }
 
-  // ── Add ───────────────────────────────────────────────
-  function addBook() {
-    const title  = document.getElementById('new-title').value.trim();
-    const author = document.getElementById('new-author').value.trim();
-    const qty    = parseInt(document.getElementById('new-qty').value) || 0;
-    if (!title || !author) { toast('⚠️ Title and author are required.'); return; }
-    books.unshift({ id: nextId++, title, author, quantity: qty });
-    save(); render(document.getElementById('search-input').value);
-    document.getElementById('new-title').value = '';
-    document.getElementById('new-author').value = '';
-    document.getElementById('new-qty').value = '';
-    toast('✅ Book added!');
-  }
-
-  // ── Edit ──────────────────────────────────────────────
+  // ── UI Actions ────────────────────────────────────────
   function toggleEdit(id) {
     document.querySelectorAll('.edit-panel').forEach(p => {
       if (p.id !== `edit-${id}`) p.classList.remove('open');
@@ -536,29 +585,21 @@
     document.getElementById(`edit-${id}`).classList.toggle('open');
   }
 
-  function saveEdit(id) {
-    const b = books.find(x => x.id === id);
-    if (!b) return;
-    b.title    = document.getElementById(`et-${id}`).value.trim() || b.title;
-    b.author   = document.getElementById(`ea-${id}`).value.trim() || b.author;
-    b.quantity = parseInt(document.getElementById(`eq-${id}`).value) || 0;
-    save(); render(document.getElementById('search-input').value);
-    toast('✏️ Book updated!');
-  }
-
-  // ── Delete ────────────────────────────────────────────
   function askDelete(id) {
     deleteTarget = id;
     document.getElementById('del-modal').classList.add('open');
   }
+
   function closeModal() {
     deleteTarget = null;
     document.getElementById('del-modal').classList.remove('open');
   }
-  document.getElementById('confirm-del').addEventListener('click', () => {
-    books = books.filter(b => b.id !== deleteTarget);
-    save(); closeModal(); render(document.getElementById('search-input').value);
-    toast('🗑️ Book removed.');
+
+  document.getElementById('confirm-del').addEventListener('click', async () => {
+    if (deleteTarget !== null) {
+      await deleteBook(deleteTarget);
+      closeModal();
+    }
   });
 
   // ── Search ────────────────────────────────────────────
@@ -566,7 +607,7 @@
     render(e.target.value);
   });
 
-  // ── Enter to add ──────────────────────────────────────
+  // ── Enter to Add ──────────────────────────────────────
   ['new-title','new-author','new-qty'].forEach(id => {
     document.getElementById(id).addEventListener('keydown', e => {
       if (e.key === 'Enter') addBook();
@@ -574,15 +615,5 @@
   });
 
   // ── Init ──────────────────────────────────────────────
-  if (!books.length) {
-    books = [
-      { id: nextId++, title: 'One Hundred Years of Solitude', author: 'Gabriel García Márquez', quantity: 3 },
-      { id: nextId++, title: 'The Hitchhiker\'s Guide to the Galaxy', author: 'Douglas Adams', quantity: 5 },
-      { id: nextId++, title: 'Sapiens', author: 'Yuval Noah Harari', quantity: 7 },
-    ];
-    save();
-  }
-  render();
+  loadBooks();
 </script>
-</body>
-</html>
