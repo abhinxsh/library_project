@@ -1,44 +1,588 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Library</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Library</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:    #1a1310;
+      --cream:  #f5f0e8;
+      --parchment: #ede6d6;
+      --accent: #b8460f;
+      --accent2: #5c8a5e;
+      --muted:  #8a7f74;
+      --border: #d4c9b8;
+      --card:   #faf7f2;
+      --shadow: 0 2px 16px rgba(26,19,16,.10);
+      --radius: 12px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--cream);
+      color: var(--ink);
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      height: 68px;
+      position: sticky; top: 0; z-index: 100;
+      box-shadow: 0 2px 20px rgba(26,19,16,.25);
+    }
+    header .logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1.45rem;
+      letter-spacing: -.5px;
+      flex: 1;
+    }
+    header .logo span { color: #d4855a; }
+
+    /* Search bar in header */
+    .search-wrap {
+      position: relative;
+      width: 280px;
+    }
+    .search-wrap input {
+      width: 100%;
+      padding: .55rem 1rem .55rem 2.6rem;
+      border-radius: 999px;
+      border: 1.5px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.09);
+      color: var(--cream);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      outline: none;
+      transition: border .2s, background .2s;
+    }
+    .search-wrap input::placeholder { color: rgba(255,255,255,.45); }
+    .search-wrap input:focus {
+      border-color: #d4855a;
+      background: rgba(255,255,255,.14);
+    }
+    .search-wrap .search-icon {
+      position: absolute; left: .85rem; top: 50%; transform: translateY(-50%);
+      opacity: .5; pointer-events: none;
+    }
+
+    /* ── Layout ── */
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 4rem;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    /* ── Panel / Card ── */
+    .panel {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+    .panel-header {
+      padding: 1.2rem 1.5rem .9rem;
+      border-bottom: 1.5px solid var(--border);
+      display: flex; align-items: center; gap: .6rem;
+    }
+    .panel-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+    }
+    .panel-body { padding: 1.4rem 1.5rem; }
+
+    /* ── Add Book Form ── */
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block;
+      font-size: .78rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .35rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: .62rem .9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .92rem;
+      color: var(--ink);
+      outline: none;
+      transition: border .2s, box-shadow .2s;
+    }
+    .form-group input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(184,70,15,.10);
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+      padding: .65rem 1.3rem;
+      border-radius: 8px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: transform .15s, box-shadow .15s, background .2s;
+    }
+    .btn:active { transform: scale(.97); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+      width: 100%;
+      padding: .75rem;
+      font-size: .95rem;
+    }
+    .btn-primary:hover { background: #9e3b0c; box-shadow: 0 4px 14px rgba(184,70,15,.3); }
+
+    .btn-sm {
+      padding: .38rem .85rem;
+      font-size: .8rem;
+      border-radius: 6px;
+    }
+    .btn-ghost {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--ink);
+    }
+    .btn-ghost:hover { background: var(--parchment); }
+    .btn-save {
+      background: var(--accent2);
+      color: white;
+    }
+    .btn-save:hover { background: #4a7250; }
+    .btn-danger {
+      background: transparent;
+      border: 1.5px solid #e8b4b4;
+      color: #b83232;
+    }
+    .btn-danger:hover { background: #fdf0f0; }
+
+    /* ── Stats row ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .8rem;
+      margin-bottom: 1.5rem;
+    }
+    .stat-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: .9rem 1rem;
+      text-align: center;
+    }
+    .stat-card .val {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+    .stat-card .lbl {
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      margin-top: .3rem;
+    }
+
+    /* ── Book List ── */
+    #book-list { display: flex; flex-direction: column; gap: .75rem; }
+
+    .book-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: box-shadow .2s, transform .2s;
+      animation: fadeSlide .3s ease both;
+    }
+    .book-card:hover { box-shadow: 0 6px 24px rgba(26,19,16,.13); transform: translateY(-1px); }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .book-main {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.2rem;
+    }
+    .book-spine {
+      width: 6px; min-height: 52px; border-radius: 3px;
+      background: linear-gradient(to bottom, var(--accent), #e07040);
+      flex-shrink: 0;
+    }
+    .book-info { flex: 1; min-width: 0; }
+    .book-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .book-author {
+      font-size: .82rem;
+      color: var(--muted);
+      margin-top: .15rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .book-qty {
+      display: inline-flex; align-items: center; gap: .35rem;
+      background: var(--parchment);
+      border: 1.5px solid var(--border);
+      border-radius: 999px;
+      padding: .25rem .75rem;
+      font-size: .82rem;
+      font-weight: 500;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .book-actions { display: flex; gap: .5rem; flex-shrink: 0; }
+
+    /* Inline edit panel */
+    .edit-panel {
+      display: none;
+      padding: 1rem 1.2rem 1.2rem;
+      border-top: 1.5px solid var(--border);
+      background: var(--parchment);
+      animation: slideDown .2s ease;
+    }
+    .edit-panel.open { display: block; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .edit-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 110px auto;
+      gap: .6rem; align-items: end;
+    }
+    .edit-row .form-group { margin: 0; }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--muted);
+    }
+    .empty .big { font-size: 3rem; margin-bottom: .5rem; }
+    .empty p { font-size: .95rem; }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 1.5rem; right: 1.5rem;
+      background: var(--ink); color: var(--cream);
+      padding: .75rem 1.3rem;
+      border-radius: 10px;
+      font-size: .88rem;
+      box-shadow: 0 4px 20px rgba(0,0,0,.25);
+      opacity: 0; pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity .25s, transform .25s;
+      z-index: 999;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(26,19,16,.5);
+      backdrop-filter: blur(3px);
+      z-index: 200;
+      align-items: center; justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 2rem;
+      width: 90%; max-width: 360px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.2);
+      animation: popIn .2s ease;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.95); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .modal h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.2rem;
+      margin-bottom: .5rem;
+    }
+    .modal p { color: var(--muted); font-size: .9rem; margin-bottom: 1.4rem; }
+    .modal-actions { display: flex; gap: .75rem; justify-content: flex-end; }
+
+    /* Responsive */
+    @media (max-width: 720px) {
+      main { grid-template-columns: 1fr; }
+      .search-wrap { width: 180px; }
+      .edit-row { grid-template-columns: 1fr 1fr; }
+      .stats-row { grid-template-columns: repeat(3,1fr); }
+    }
+  </style>
 </head>
 <body>
 
-<h1>📚 Library System</h1>
+<!-- ── Header ── -->
+<header>
+  <div class="logo">📚 <span>Biblio</span>theca</div>
+  <div class="search-wrap">
+    <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input id="search-input" type="text" placeholder="Search books…" />
+  </div>
+</header>
 
-<form method="GET">
-    <input type="text" name="q" placeholder="Search..." value="{{ query }}">
-    <button type="submit">Search</button>
-</form>
+<!-- ── Main ── -->
+<main>
 
-<h2>Add Book</h2>
-<form method="POST" action="/add/">
-    {% csrf_token %}
-    <input name="title" placeholder="Title" required>
-    <input name="author" placeholder="Author" required>
-    <input name="quantity" type="number" required>
-    <button>Add</button>
-</form>
+  <!-- Left: Add Book -->
+  <aside>
+    <div class="panel">
+      <div class="panel-header">
+        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        <h2>Add New Book</h2>
+      </div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label>Title</label>
+          <input id="new-title" type="text" placeholder="e.g. The Great Gatsby" />
+        </div>
+        <div class="form-group">
+          <label>Author</label>
+          <input id="new-author" type="text" placeholder="e.g. F. Scott Fitzgerald" />
+        </div>
+        <div class="form-group">
+          <label>Quantity</label>
+          <input id="new-qty" type="number" placeholder="1" min="0" />
+        </div>
+        <button class="btn btn-primary" onclick="addBook()">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          Add to Library
+        </button>
+      </div>
+    </div>
+  </aside>
 
-<h2>Books</h2>
-<ul>
-{% for book in books %}
-    <li>
-        {{ book.title }} - {{ book.author }} ({{ book.quantity }})
+  <!-- Right: Books -->
+  <section>
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="val" id="stat-titles">0</div>
+        <div class="lbl">Titles</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="stat-copies">0</div>
+        <div class="lbl">Copies</div>
+      </div>
+      <div class="stat-card">
+        <div class="val" id="stat-authors">0</div>
+        <div class="lbl">Authors</div>
+      </div>
+    </div>
 
-        <form method="POST" action="/update/{{ book.id }}/">
-            {% csrf_token %}
-            <input name="title" value="{{ book.title }}">
-            <input name="author" value="{{ book.author }}">
-            <input name="quantity" value="{{ book.quantity }}">
-            <button>Update</button>
-        </form>
+    <div id="book-list"></div>
+  </section>
+</main>
 
-        <a href="/delete/{{ book.id }}/">Delete</a>
-    </li>
-{% endfor %}
-</ul>
+<!-- Delete Modal -->
+<div class="modal-overlay" id="del-modal">
+  <div class="modal">
+    <h3>Remove this book?</h3>
+    <p>This will permanently delete the book from your library.</p>
+    <div class="modal-actions">
+      <button class="btn btn-sm btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-sm btn-danger" id="confirm-del">Delete</button>
+    </div>
+  </div>
+</div>
 
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+  // ── Data ──────────────────────────────────────────────
+  let books = JSON.parse(localStorage.getItem('lib_books') || '[]');
+  let nextId = parseInt(localStorage.getItem('lib_next') || '1');
+  let deleteTarget = null;
+
+  function save() {
+    localStorage.setItem('lib_books', JSON.stringify(books));
+    localStorage.setItem('lib_next', String(nextId));
+  }
+
+  // ── Toast ─────────────────────────────────────────────
+  function toast(msg) {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2600);
+  }
+
+  // ── Stats ─────────────────────────────────────────────
+  function updateStats(list) {
+    document.getElementById('stat-titles').textContent = list.length;
+    document.getElementById('stat-copies').textContent = list.reduce((s,b)=>s+b.quantity,0);
+    document.getElementById('stat-authors').textContent = new Set(list.map(b=>b.author.trim().toLowerCase())).size;
+  }
+
+  // ── Render ────────────────────────────────────────────
+  function render(filter = '') {
+    const q = filter.toLowerCase();
+    const filtered = books.filter(b =>
+      b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q)
+    );
+    updateStats(filtered);
+
+    const list = document.getElementById('book-list');
+
+    if (!filtered.length) {
+      list.innerHTML = `<div class="empty">
+        <div class="big">${filter ? '🔍' : '📭'}</div>
+        <p>${filter ? 'No books match your search.' : 'Your library is empty. Add a book to get started!'}</p>
+      </div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(b => `
+      <div class="book-card" id="card-${b.id}">
+        <div class="book-main">
+          <div class="book-spine"></div>
+          <div class="book-info">
+            <div class="book-title">${esc(b.title)}</div>
+            <div class="book-author">by ${esc(b.author)}</div>
+          </div>
+          <div class="book-qty">📖 ${b.quantity}</div>
+          <div class="book-actions">
+            <button class="btn btn-sm btn-ghost" title="Edit" onclick="toggleEdit(${b.id})">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+            <button class="btn btn-sm btn-danger" title="Delete" onclick="askDelete(${b.id})">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            </button>
+          </div>
+        </div>
+        <div class="edit-panel" id="edit-${b.id}">
+          <div class="edit-row">
+            <div class="form-group">
+              <label>Title</label>
+              <input id="et-${b.id}" value="${esc(b.title)}" />
+            </div>
+            <div class="form-group">
+              <label>Author</label>
+              <input id="ea-${b.id}" value="${esc(b.author)}" />
+            </div>
+            <div class="form-group">
+              <label>Quantity</label>
+              <input id="eq-${b.id}" type="number" min="0" value="${b.quantity}" />
+            </div>
+            <button class="btn btn-sm btn-save" style="margin-bottom:1px" onclick="saveEdit(${b.id})">Save</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Add ───────────────────────────────────────────────
+  function addBook() {
+    const title  = document.getElementById('new-title').value.trim();
+    const author = document.getElementById('new-author').value.trim();
+    const qty    = parseInt(document.getElementById('new-qty').value) || 0;
+    if (!title || !author) { toast('⚠️ Title and author are required.'); return; }
+    books.unshift({ id: nextId++, title, author, quantity: qty });
+    save(); render(document.getElementById('search-input').value);
+    document.getElementById('new-title').value = '';
+    document.getElementById('new-author').value = '';
+    document.getElementById('new-qty').value = '';
+    toast('✅ Book added!');
+  }
+
+  // ── Edit ──────────────────────────────────────────────
+  function toggleEdit(id) {
+    document.querySelectorAll('.edit-panel').forEach(p => {
+      if (p.id !== `edit-${id}`) p.classList.remove('open');
+    });
+    document.getElementById(`edit-${id}`).classList.toggle('open');
+  }
+
+  function saveEdit(id) {
+    const b = books.find(x => x.id === id);
+    if (!b) return;
+    b.title    = document.getElementById(`et-${id}`).value.trim() || b.title;
+    b.author   = document.getElementById(`ea-${id}`).value.trim() || b.author;
+    b.quantity = parseInt(document.getElementById(`eq-${id}`).value) || 0;
+    save(); render(document.getElementById('search-input').value);
+    toast('✏️ Book updated!');
+  }
+
+  // ── Delete ────────────────────────────────────────────
+  function askDelete(id) {
+    deleteTarget = id;
+    document.getElementById('del-modal').classList.add('open');
+  }
+  function closeModal() {
+    deleteTarget = null;
+    document.getElementById('del-modal').classList.remove('open');
+  }
+  document.getElementById('confirm-del').addEventListener('click', () => {
+    books = books.filter(b => b.id !== deleteTarget);
+    save(); closeModal(); render(document.getElementById('search-input').value);
+    toast('🗑️ Book removed.');
+  });
+
+  // ── Search ────────────────────────────────────────────
+  document.getElementById('search-input').addEventListener('input', e => {
+    render(e.target.value);
+  });
+
+  // ── Enter to add ──────────────────────────────────────
+  ['new-title','new-author','new-qty'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => {
+      if (e.key === 'Enter') addBook();
+    });
+  });
+
+  // ── Init ──────────────────────────────────────────────
+  if (!books.length) {
+    books = [
+      { id: nextId++, title: 'One Hundred Years of Solitude', author: 'Gabriel García Márquez', quantity: 3 },
+      { id: nextId++, title: 'The Hitchhiker\'s Guide to the Galaxy', author: 'Douglas Adams', quantity: 5 },
+      { id: nextId++, title: 'Sapiens', author: 'Yuval Noah Harari', quantity: 7 },
+    ];
+    save();
+  }
+  render();
+</script>
 </body>
 </html>
