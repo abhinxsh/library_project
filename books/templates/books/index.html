@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Library</title>
+  <title>Bibliotheca</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --ink:    #1a1310;
-      --cream:  #f5f0e8;
+      --ink:       #1a1310;
+      --cream:     #f5f0e8;
       --parchment: #ede6d6;
-      --accent: #b8460f;
-      --accent2: #5c8a5e;
-      --muted:  #8a7f74;
-      --border: #d4c9b8;
-      --card:   #faf7f2;
-      --shadow: 0 2px 16px rgba(26,19,16,.10);
-      --radius: 12px;
+      --accent:    #b8460f;
+      --accent2:   #5c8a5e;
+      --muted:     #8a7f74;
+      --border:    #d4c9b8;
+      --card:      #faf7f2;
+      --shadow:    0 2px 16px rgba(26,19,16,.10);
+      --radius:    12px;
     }
 
     body {
@@ -28,7 +28,114 @@
       min-height: 100vh;
     }
 
-    /* ── Header ── */
+    /* LOGIN */
+    #login-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--ink);
+      position: relative;
+      overflow: hidden;
+    }
+    #login-screen::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 80%, rgba(184,70,15,.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(92,138,94,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .login-box {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 2.8rem 2.5rem 2.5rem;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 24px 64px rgba(0,0,0,.4);
+      position: relative;
+      z-index: 1;
+      animation: popIn .35s cubic-bezier(.34,1.56,.64,1) both;
+    }
+    @keyframes popIn {
+      from { opacity:0; transform:scale(.9) translateY(20px); }
+      to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+    .login-logo {
+      font-family: 'Playfair Display', serif;
+      font-weight: 900;
+      font-size: 1.7rem;
+      letter-spacing: -.5px;
+      margin-bottom: .3rem;
+    }
+    .login-logo span { color: var(--accent); }
+    .login-sub { color: var(--muted); font-size: .85rem; margin-bottom: 2rem; }
+    .login-field { margin-bottom: 1rem; }
+    .login-field label {
+      display: block;
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .4rem;
+    }
+    .login-field input {
+      width: 100%;
+      padding: .72rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      background: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .95rem;
+      color: var(--ink);
+      outline: none;
+      transition: border .2s, box-shadow .2s;
+    }
+    .login-field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(184,70,15,.10);
+    }
+    .login-btn {
+      width: 100%;
+      padding: .8rem;
+      margin-top: .6rem;
+      border: none;
+      border-radius: 9px;
+      background: var(--accent);
+      color: white;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background .2s, transform .15s, box-shadow .2s;
+    }
+    .login-btn:hover { background: #9e3b0c; box-shadow: 0 6px 20px rgba(184,70,15,.35); }
+    .login-btn:active { transform: scale(.97); }
+    .login-error {
+      background: #fdf0f0;
+      border: 1.5px solid #e8b4b4;
+      color: #b83232;
+      border-radius: 8px;
+      padding: .6rem .9rem;
+      font-size: .85rem;
+      margin-top: .9rem;
+      display: none;
+    }
+    .login-error.show { display: block; animation: shake .3s ease; }
+    @keyframes shake {
+      0%,100%{transform:translateX(0)}
+      25%{transform:translateX(-6px)}
+      75%{transform:translateX(6px)}
+    }
+
+    /* APP */
+    #app { display: none; }
+    #app.visible { display: block; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
     header {
       background: var(--ink);
       color: var(--cream);
@@ -49,11 +156,24 @@
     }
     header .logo span { color: #d4855a; }
 
-    /* Search bar in header */
-    .search-wrap {
-      position: relative;
-      width: 280px;
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      padding: .3rem .85rem;
+      border-radius: 999px;
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .04em;
+      flex-shrink: 0;
     }
+    .role-badge.admin { background: rgba(184,70,15,.25); color: #f0a070; border: 1px solid rgba(184,70,15,.4); }
+    .role-badge.user  { background: rgba(92,138,94,.2);  color: #8dc490; border: 1px solid rgba(92,138,94,.35); }
+    .role-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .admin .role-dot { background: #f0a070; }
+    .user  .role-dot { background: #8dc490; }
+
+    .search-wrap { position: relative; width: 280px; }
     .search-wrap input {
       width: 100%;
       padding: .55rem 1rem .55rem 2.6rem;
@@ -67,16 +187,26 @@
       transition: border .2s, background .2s;
     }
     .search-wrap input::placeholder { color: rgba(255,255,255,.45); }
-    .search-wrap input:focus {
-      border-color: #d4855a;
-      background: rgba(255,255,255,.14);
-    }
+    .search-wrap input:focus { border-color: #d4855a; background: rgba(255,255,255,.14); }
     .search-wrap .search-icon {
       position: absolute; left: .85rem; top: 50%; transform: translateY(-50%);
       opacity: .5; pointer-events: none;
     }
 
-    /* ── Layout ── */
+    .logout-btn {
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.18);
+      color: rgba(255,255,255,.7);
+      padding: .38rem .9rem;
+      border-radius: 7px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .8rem;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      flex-shrink: 0;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,.18); color: white; }
+
     main {
       max-width: 1100px;
       margin: 0 auto;
@@ -86,330 +216,156 @@
       gap: 2rem;
       align-items: start;
     }
+    main.user-layout { grid-template-columns: 1fr; }
 
-    /* ── Panel / Card ── */
-    .panel {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-    .panel-header {
-      padding: 1.2rem 1.5rem .9rem;
-      border-bottom: 1.5px solid var(--border);
-      display: flex; align-items: center; gap: .6rem;
-    }
-    .panel-header h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.05rem;
-      font-weight: 700;
-    }
+    .panel { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); }
+    .panel-header { padding: 1.2rem 1.5rem .9rem; border-bottom: 1.5px solid var(--border); display: flex; align-items: center; gap: .6rem; }
+    .panel-header h2 { font-family: 'Playfair Display', serif; font-size: 1.05rem; font-weight: 700; }
     .panel-body { padding: 1.4rem 1.5rem; }
 
-    /* ── Add Book Form ── */
     .form-group { margin-bottom: 1rem; }
-    .form-group label {
-      display: block;
-      font-size: .78rem;
-      font-weight: 500;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: .35rem;
-    }
-    .form-group input {
-      width: 100%;
-      padding: .62rem .9rem;
-      border: 1.5px solid var(--border);
-      border-radius: 8px;
-      background: white;
-      font-family: 'DM Sans', sans-serif;
-      font-size: .92rem;
-      color: var(--ink);
-      outline: none;
-      transition: border .2s, box-shadow .2s;
-    }
-    .form-group input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(184,70,15,.10);
-    }
+    .form-group label { display: block; font-size: .78rem; font-weight: 500; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); margin-bottom: .35rem; }
+    .form-group input { width: 100%; padding: .62rem .9rem; border: 1.5px solid var(--border); border-radius: 8px; background: white; font-family: 'DM Sans', sans-serif; font-size: .92rem; color: var(--ink); outline: none; transition: border .2s, box-shadow .2s; }
+    .form-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(184,70,15,.10); }
 
-    .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
-      padding: .65rem 1.3rem;
-      border-radius: 8px;
-      border: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: .9rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: transform .15s, box-shadow .15s, background .2s;
-    }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .45rem; padding: .65rem 1.3rem; border-radius: 8px; border: none; font-family: 'DM Sans', sans-serif; font-size: .9rem; font-weight: 500; cursor: pointer; transition: transform .15s, box-shadow .15s, background .2s; }
     .btn:active { transform: scale(.97); }
-
-    .btn-primary {
-      background: var(--accent);
-      color: white;
-      width: 100%;
-      padding: .75rem;
-      font-size: .95rem;
-    }
+    .btn-primary { background: var(--accent); color: white; width: 100%; padding: .75rem; font-size: .95rem; }
     .btn-primary:hover { background: #9e3b0c; box-shadow: 0 4px 14px rgba(184,70,15,.3); }
-
-    .btn-sm {
-      padding: .38rem .85rem;
-      font-size: .8rem;
-      border-radius: 6px;
-    }
-    .btn-ghost {
-      background: transparent;
-      border: 1.5px solid var(--border);
-      color: var(--ink);
-    }
+    .btn-sm { padding: .38rem .85rem; font-size: .8rem; border-radius: 6px; }
+    .btn-ghost { background: transparent; border: 1.5px solid var(--border); color: var(--ink); }
     .btn-ghost:hover { background: var(--parchment); }
-    .btn-save {
-      background: var(--accent2);
-      color: white;
-    }
+    .btn-save { background: var(--accent2); color: white; }
     .btn-save:hover { background: #4a7250; }
-    .btn-danger {
-      background: transparent;
-      border: 1.5px solid #e8b4b4;
-      color: #b83232;
-    }
+    .btn-danger { background: transparent; border: 1.5px solid #e8b4b4; color: #b83232; }
     .btn-danger:hover { background: #fdf0f0; }
 
-    /* ── Stats row ── */
-    .stats-row {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: .8rem;
-      margin-bottom: 1.5rem;
-    }
-    .stat-card {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: .9rem 1rem;
-      text-align: center;
-    }
-    .stat-card .val {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.8rem;
-      font-weight: 700;
-      line-height: 1;
-    }
-    .stat-card .lbl {
-      font-size: .72rem;
-      text-transform: uppercase;
-      letter-spacing: .06em;
-      color: var(--muted);
-      margin-top: .3rem;
-    }
+    .stats-row { display: grid; grid-template-columns: repeat(3,1fr); gap: .8rem; margin-bottom: 1.5rem; }
+    .stat-card { background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; padding: .9rem 1rem; text-align: center; }
+    .stat-card .val { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 700; line-height: 1; }
+    .stat-card .lbl { font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-top: .3rem; }
 
-    /* ── Book List ── */
     #book-list { display: flex; flex-direction: column; gap: .75rem; }
-
-    .book-card {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow: hidden;
-      transition: box-shadow .2s, transform .2s;
-      animation: fadeSlide .3s ease both;
-    }
+    .book-card { background: var(--card); border: 1.5px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; transition: box-shadow .2s, transform .2s; animation: fadeSlide .3s ease both; }
     .book-card:hover { box-shadow: 0 6px 24px rgba(26,19,16,.13); transform: translateY(-1px); }
+    @keyframes fadeSlide { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-    @keyframes fadeSlide {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    .book-main {
-      display: flex; align-items: center; gap: 1rem;
-      padding: 1rem 1.2rem;
-    }
-    .book-spine {
-      width: 6px; min-height: 52px; border-radius: 3px;
-      background: linear-gradient(to bottom, var(--accent), #e07040);
-      flex-shrink: 0;
-    }
+    .book-main { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.2rem; }
+    .book-spine { width: 6px; min-height: 52px; border-radius: 3px; background: linear-gradient(to bottom, var(--accent), #e07040); flex-shrink: 0; }
     .book-info { flex: 1; min-width: 0; }
-    .book-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 1rem;
-      font-weight: 700;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .book-author {
-      font-size: .82rem;
-      color: var(--muted);
-      margin-top: .15rem;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-    .book-qty {
-      display: inline-flex; align-items: center; gap: .35rem;
-      background: var(--parchment);
-      border: 1.5px solid var(--border);
-      border-radius: 999px;
-      padding: .25rem .75rem;
-      font-size: .82rem;
-      font-weight: 500;
-      white-space: nowrap;
-      flex-shrink: 0;
-    }
+    .book-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .book-author { font-size: .82rem; color: var(--muted); margin-top: .15rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .book-qty { display: inline-flex; align-items: center; gap: .35rem; background: var(--parchment); border: 1.5px solid var(--border); border-radius: 999px; padding: .25rem .75rem; font-size: .82rem; font-weight: 500; white-space: nowrap; flex-shrink: 0; }
     .book-actions { display: flex; gap: .5rem; flex-shrink: 0; }
 
-    /* Inline edit panel */
-    .edit-panel {
-      display: none;
-      padding: 1rem 1.2rem 1.2rem;
-      border-top: 1.5px solid var(--border);
-      background: var(--parchment);
-      animation: slideDown .2s ease;
-    }
-    .edit-panel.open { display: block; }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-8px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .edit-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 110px auto;
-      gap: .6rem; align-items: end;
-    }
-    .edit-row .form-group { margin: 0; }
+    .edit-panel { display: none; padding: 1rem 1.2rem 1.2rem; border-top: 1.5px solid var(--border); background: var(--parchment); }
+    .edit-panel.open { display: block; animation: slideDown .2s ease; }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }
+    .edit-row { display: grid; grid-template-columns: 1fr 1fr 110px auto; gap: .6rem; align-items: end; }
+    .edit-row input { width: 100%; padding: .55rem .8rem; border: 1.5px solid var(--border); border-radius: 7px; font-family: 'DM Sans', sans-serif; font-size: .88rem; outline: none; }
+    .edit-row input:focus { border-color: var(--accent); }
 
-    /* Empty state */
-    .empty {
-      text-align: center;
-      padding: 3rem 1rem;
-      color: var(--muted);
-    }
+    .user-banner { background: linear-gradient(135deg,rgba(92,138,94,.12),rgba(92,138,94,.05)); border: 1.5px solid rgba(92,138,94,.3); border-radius: 10px; padding: .8rem 1.2rem; margin-bottom: 1.5rem; font-size: .85rem; color: #4a7250; display: flex; align-items: center; gap: .6rem; }
+
+    .empty { text-align: center; padding: 3rem 1rem; color: var(--muted); }
     .empty .big { font-size: 3rem; margin-bottom: .5rem; }
     .empty p { font-size: .95rem; }
 
-    /* Toast */
-    #toast {
-      position: fixed; bottom: 1.5rem; right: 1.5rem;
-      background: var(--ink); color: var(--cream);
-      padding: .75rem 1.3rem;
-      border-radius: 10px;
-      font-size: .88rem;
-      box-shadow: 0 4px 20px rgba(0,0,0,.25);
-      opacity: 0; pointer-events: none;
-      transform: translateY(8px);
-      transition: opacity .25s, transform .25s;
-      z-index: 999;
-    }
+    #toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: var(--ink); color: var(--cream); padding: .75rem 1.3rem; border-radius: 10px; font-size: .88rem; box-shadow: 0 4px 20px rgba(0,0,0,.25); opacity: 0; pointer-events: none; transform: translateY(8px); transition: opacity .25s, transform .25s; z-index: 999; }
     #toast.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
 
-    /* Modal */
-    .modal-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(26,19,16,.5);
-      backdrop-filter: blur(3px);
-      z-index: 200;
-      align-items: center; justify-content: center;
-    }
+    .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(26,19,16,.5); backdrop-filter: blur(3px); z-index: 200; align-items: center; justify-content: center; }
     .modal-overlay.open { display: flex; }
-    .modal {
-      background: var(--card);
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 2rem;
-      width: 90%; max-width: 360px;
-      box-shadow: 0 16px 48px rgba(0,0,0,.2);
-      animation: popIn .2s ease;
-    }
-    @keyframes popIn {
-      from { opacity: 0; transform: scale(.95); }
-      to   { opacity: 1; transform: scale(1); }
-    }
-    .modal h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      margin-bottom: .5rem;
-    }
+    .modal { background: var(--card); border: 1.5px solid var(--border); border-radius: 14px; padding: 2rem; width: 90%; max-width: 360px; box-shadow: 0 16px 48px rgba(0,0,0,.2); animation: popIn .2s ease; }
+    .modal h3 { font-family: 'Playfair Display', serif; font-size: 1.2rem; margin-bottom: .5rem; }
     .modal p { color: var(--muted); font-size: .9rem; margin-bottom: 1.4rem; }
     .modal-actions { display: flex; gap: .75rem; justify-content: flex-end; }
 
-    /* Responsive */
     @media (max-width: 720px) {
       main { grid-template-columns: 1fr; }
-      .search-wrap { width: 180px; }
+      .search-wrap { width: 160px; }
       .edit-row { grid-template-columns: 1fr 1fr; }
-      .stats-row { grid-template-columns: repeat(3,1fr); }
     }
   </style>
 </head>
 <body>
 
-<!-- ── Header ── -->
-<header>
-  <div class="logo">📚 <span>Biblio</span>theca</div>
-  <div class="search-wrap">
-    <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-    </svg>
-    <input id="search-input" type="text" placeholder="Search books…" />
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">📚 <span>Biblio</span>theca</div>
+    <div class="login-sub">Sign in to access the library</div>
+    <div class="login-field">
+      <label>Email address</label>
+      <input id="login-email" type="email" placeholder="you@example.com" autocomplete="email" />
+    </div>
+    <div class="login-field">
+      <label>Password</label>
+      <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password" />
+    </div>
+    <button class="login-btn" id="login-btn">Sign In</button>
+    <div class="login-error" id="login-error">✖ Incorrect email or password.</div>
   </div>
-</header>
+</div>
 
-<!-- ── Main ── -->
-<main>
-
-  <!-- Left: Add Book -->
-  <aside>
-    <div class="panel">
-      <div class="panel-header">
-        <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        <h2>Add New Book</h2>
-      </div>
-      <div class="panel-body">
-        <div class="form-group">
-          <label>Title</label>
-          <input id="new-title" type="text" placeholder="e.g. The Great Gatsby" />
-        </div>
-        <div class="form-group">
-          <label>Author</label>
-          <input id="new-author" type="text" placeholder="e.g. F. Scott Fitzgerald" />
-        </div>
-        <div class="form-group">
-          <label>Quantity</label>
-          <input id="new-qty" type="number" placeholder="1" min="0" />
-        </div>
-        <button class="btn btn-primary" onclick="addBook()">
-          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-          Add to Library
-        </button>
-      </div>
+<!-- APP -->
+<div id="app">
+  <header>
+    <div class="logo">📚 <span>Biblio</span>theca</div>
+    <div class="search-wrap">
+      <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+      </svg>
+      <input id="search-input" type="text" placeholder="Search books…" />
     </div>
-  </aside>
-
-  <!-- Right: Books -->
-  <section>
-    <!-- Stats -->
-    <div class="stats-row">
-      <div class="stat-card">
-        <div class="val" id="stat-titles">0</div>
-        <div class="lbl">Titles</div>
-      </div>
-      <div class="stat-card">
-        <div class="val" id="stat-copies">0</div>
-        <div class="lbl">Copies</div>
-      </div>
-      <div class="stat-card">
-        <div class="val" id="stat-authors">0</div>
-        <div class="lbl">Authors</div>
-      </div>
+    <div class="role-badge" id="role-badge">
+      <span class="role-dot"></span>
+      <span id="role-label">User</span>
     </div>
+    <button class="logout-btn" id="logout-btn">Sign out</button>
+  </header>
 
-    <div id="book-list"></div>
-  </section>
-</main>
+  <main id="main-layout">
+    <aside id="admin-panel">
+      <div class="panel">
+        <div class="panel-header">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+          <h2>Add New Book</h2>
+        </div>
+        <div class="panel-body">
+          <div class="form-group">
+            <label>Title</label>
+            <input id="new-title" type="text" placeholder="e.g. The Great Gatsby" />
+          </div>
+          <div class="form-group">
+            <label>Author</label>
+            <input id="new-author" type="text" placeholder="e.g. F. Scott Fitzgerald" />
+          </div>
+          <div class="form-group">
+            <label>Quantity</label>
+            <input id="new-qty" type="number" placeholder="1" min="0" />
+          </div>
+          <button class="btn btn-primary" id="add-book-btn">
+            <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+            Add to Library
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <section>
+      <div class="user-banner" id="user-banner" style="display:none">
+        🔒 You have read-only access. Contact the admin to add, edit, or remove books.
+      </div>
+      <div class="stats-row">
+        <div class="stat-card"><div class="val" id="stat-titles">0</div><div class="lbl">Titles</div></div>
+        <div class="stat-card"><div class="val" id="stat-copies">0</div><div class="lbl">Copies</div></div>
+        <div class="stat-card"><div class="val" id="stat-authors">0</div><div class="lbl">Authors</div></div>
+      </div>
+      <div id="book-list"></div>
+    </section>
+  </main>
+</div>
 
 <!-- Delete Modal -->
 <div class="modal-overlay" id="del-modal">
@@ -417,172 +373,221 @@
     <h3>Remove this book?</h3>
     <p>This will permanently delete the book from your library.</p>
     <div class="modal-actions">
-      <button class="btn btn-sm btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-sm btn-ghost" id="cancel-del">Cancel</button>
       <button class="btn btn-sm btn-danger" id="confirm-del">Delete</button>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
 <div id="toast"></div>
 
 <script>
-  // ── State ─────────────────────────────────────────────
-  let books = [];
-  let deleteTarget = null;
+(function () {
+  'use strict';
+
+  var currentRole = null;
+  var books = [];
+  var deleteTarget = null;
 
   // ── CSRF ──────────────────────────────────────────────
   function getCSRFToken() {
-    return document.cookie
-      .split('; ')
-      .find(row => row.startsWith('csrftoken'))
-      ?.split('=')[1];
+    var match = document.cookie.match(/csrftoken=([^;]+)/);
+    return match ? match[1] : '';
   }
 
-  // ── Toast ─────────────────────────────────────────────
+  // ── TOAST ─────────────────────────────────────────────
   function toast(msg) {
-    const el = document.getElementById('toast');
+    var el = document.getElementById('toast');
     el.textContent = msg;
     el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 2600);
+    setTimeout(function () { el.classList.remove('show'); }, 2600);
   }
 
-  // ── API Calls ─────────────────────────────────────────
-  async function loadBooks() {
-    const res = await fetch('/api/books/');
-    books = await res.json();
-    render();
+  // ── ESC ───────────────────────────────────────────────
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
   }
 
-  async function addBook() {
-    const title = document.getElementById('new-title').value.trim();
-    const author = document.getElementById('new-author').value.trim();
-    const quantity = parseInt(document.getElementById('new-qty').value) || 0;
+  // ── AUTH ──────────────────────────────────────────────
+  function doLogin() {
+    var email    = document.getElementById('login-email').value.trim().toLowerCase();
+    var password = document.getElementById('login-pass').value;
+    var errEl    = document.getElementById('login-error');
 
-    if (!title || !author) {
-      toast('⚠️ Title and author required');
-      return;
-    }
-
-    await fetch('/api/books/', {
+    fetch('/api/login/', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCSRFToken()
-      },
-      body: JSON.stringify({ title, author, quantity })
-    });
-
-    await loadBooks();
-
-    document.getElementById('new-title').value = '';
-    document.getElementById('new-author').value = '';
-    document.getElementById('new-qty').value = '';
-
-    toast('✅ Book added!');
-  }
-
-  async function updateBook(id) {
-    const title = document.getElementById(`et-${id}`).value.trim();
-    const author = document.getElementById(`ea-${id}`).value.trim();
-    const quantity = parseInt(document.getElementById(`eq-${id}`).value) || 0;
-
-    await fetch(`/api/books/${id}/`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-CSRFToken': getCSRFToken()
-      },
-      body: JSON.stringify({ title, author, quantity })
-    });
-
-    await loadBooks();
-    toast('✏️ Book updated!');
-  }
-
-  async function deleteBook(id) {
-    await fetch(`/api/books/${id}/`, {
-      method: 'DELETE',
-      headers: {
-        'X-CSRFToken': getCSRFToken()
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+      body: JSON.stringify({ email: email, password: password })
+    })
+    .then(function (res) {
+      return res.json().then(function (data) {
+        return { status: res.status, data: data };
+      });
+    })
+    .then(function (r) {
+      if (r.status !== 200) {
+        errEl.textContent = r.data.error || 'Incorrect email or password.';
+        errEl.classList.add('show');
+        document.getElementById('login-pass').value = '';
+        return;
       }
+      errEl.classList.remove('show');
+      currentRole = r.data.role;
+      showApp();
+    })
+    .catch(function (err) {
+      errEl.textContent = 'Could not reach server: ' + err.message;
+      errEl.classList.add('show');
     });
-
-    await loadBooks();
-    toast('🗑️ Book removed.');
   }
 
-  // ── Stats ─────────────────────────────────────────────
+  function doLogout() {
+    fetch('/api/logout/', {
+      method: 'POST',
+      headers: { 'X-CSRFToken': getCSRFToken() }
+    }).finally(function () {
+      currentRole = null;
+      document.getElementById('app').style.display = 'none';
+      document.getElementById('login-screen').style.display = 'flex';
+      document.getElementById('login-email').value = '';
+      document.getElementById('login-pass').value = '';
+    });
+  }
+
+  function showApp() {
+    document.getElementById('login-screen').style.display = 'none';
+    var appEl = document.getElementById('app');
+    appEl.style.display = 'block';
+
+    var isAdmin = currentRole === 'admin';
+
+    var badge = document.getElementById('role-badge');
+    badge.className = 'role-badge ' + currentRole;
+    document.getElementById('role-label').textContent = isAdmin ? '⭐ Admin' : 'Reader';
+
+    document.getElementById('admin-panel').style.display = isAdmin ? '' : 'none';
+    document.getElementById('main-layout').className     = isAdmin ? '' : 'user-layout';
+    document.getElementById('user-banner').style.display = isAdmin ? 'none' : 'flex';
+
+    loadBooks();
+  }
+
+  // Check existing session on page load
+  fetch('/api/me/')
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      if (data.authenticated) {
+        currentRole = data.role;
+        showApp();
+      }
+    })
+    .catch(function () {});
+
+  // ── BOOKS API ─────────────────────────────────────────
+  function loadBooks() {
+    fetch('/api/books/')
+      .then(function (res) {
+        if (res.status === 401) { doLogout(); return null; }
+        return res.json();
+      })
+      .then(function (data) {
+        if (!data) return;
+        books = data;
+        render('');
+      });
+  }
+
+  function addBook() {
+    var title    = document.getElementById('new-title').value.trim();
+    var author   = document.getElementById('new-author').value.trim();
+    var quantity = parseInt(document.getElementById('new-qty').value) || 0;
+    if (!title || !author) { toast('⚠️ Title and author required'); return; }
+
+    fetch('/api/books/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+      body: JSON.stringify({ title: title, author: author, quantity: quantity })
+    }).then(function () {
+      document.getElementById('new-title').value  = '';
+      document.getElementById('new-author').value = '';
+      document.getElementById('new-qty').value    = '';
+      loadBooks();
+      toast('✅ Book added!');
+    });
+  }
+
+  function updateBook(id) {
+    var title    = document.getElementById('et-' + id).value.trim();
+    var author   = document.getElementById('ea-' + id).value.trim();
+    var quantity = parseInt(document.getElementById('eq-' + id).value) || 0;
+
+    fetch('/api/books/' + id + '/', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+      body: JSON.stringify({ title: title, author: author, quantity: quantity })
+    }).then(function () { loadBooks(); toast('✏️ Book updated!'); });
+  }
+
+  function deleteBook(id) {
+    fetch('/api/books/' + id + '/', {
+      method: 'DELETE',
+      headers: { 'X-CSRFToken': getCSRFToken() }
+    }).then(function () { loadBooks(); toast('🗑️ Book removed.'); });
+  }
+
+  // ── RENDER ────────────────────────────────────────────
   function updateStats(list) {
-    document.getElementById('stat-titles').textContent = list.length;
-    document.getElementById('stat-copies').textContent =
-      list.reduce((s, b) => s + b.quantity, 0);
-    document.getElementById('stat-authors').textContent =
-      new Set(list.map(b => b.author.toLowerCase())).size;
+    document.getElementById('stat-titles').textContent  = list.length;
+    document.getElementById('stat-copies').textContent  = list.reduce(function (s, b) { return s + b.quantity; }, 0);
+    document.getElementById('stat-authors').textContent = new Set(list.map(function (b) { return b.author.toLowerCase(); })).size;
   }
 
-  // ── Render ────────────────────────────────────────────
-  function render(filter = '') {
-    const q = filter.toLowerCase();
-    const filtered = books.filter(b =>
-      b.title.toLowerCase().includes(q) ||
-      b.author.toLowerCase().includes(q)
-    );
+  function render(filter) {
+    var q        = filter.toLowerCase();
+    var filtered = books.filter(function (b) {
+      return b.title.toLowerCase().indexOf(q) !== -1 || b.author.toLowerCase().indexOf(q) !== -1;
+    });
 
     updateStats(filtered);
 
-    const list = document.getElementById('book-list');
+    var isAdmin = currentRole === 'admin';
+    var list    = document.getElementById('book-list');
 
     if (!filtered.length) {
-      list.innerHTML = `
-        <div class="empty">
-          <div class="big">${filter ? '🔍' : '📭'}</div>
-          <p>${filter ? 'No books match your search.' : 'Your library is empty.'}</p>
-        </div>`;
+      list.innerHTML = '<div class="empty"><div class="big">' + (filter ? '🔍' : '📭') + '</div><p>' + (filter ? 'No books match your search.' : 'Your library is empty.') + '</p></div>';
       return;
     }
 
-    list.innerHTML = filtered.map(b => `
-      <div class="book-card">
-        <div class="book-main">
-          <div class="book-spine"></div>
-          <div class="book-info">
-            <div class="book-title">${esc(b.title)}</div>
-            <div class="book-author">by ${esc(b.author)}</div>
-          </div>
-          <div class="book-qty">📖 ${b.quantity}</div>
-          <div class="book-actions">
-            <button class="btn btn-sm btn-ghost" onclick="toggleEdit(${b.id})">Edit</button>
-            <button class="btn btn-sm btn-danger" onclick="askDelete(${b.id})">Delete</button>
-          </div>
-        </div>
+    list.innerHTML = filtered.map(function (b) {
+      var actions = isAdmin
+        ? '<div class="book-actions"><button class="btn btn-sm btn-ghost" data-edit="' + b.id + '">Edit</button><button class="btn btn-sm btn-danger" data-delete="' + b.id + '">Delete</button></div>'
+        : '';
+      var editPanel = isAdmin
+        ? '<div class="edit-panel" id="edit-' + b.id + '"><div class="edit-row"><input id="et-' + b.id + '" value="' + esc(b.title) + '" /><input id="ea-' + b.id + '" value="' + esc(b.author) + '" /><input id="eq-' + b.id + '" type="number" value="' + b.quantity + '" /><button class="btn btn-sm btn-save" data-save="' + b.id + '">Save</button></div></div>'
+        : '';
+      return '<div class="book-card"><div class="book-main"><div class="book-spine"></div><div class="book-info"><div class="book-title">' + esc(b.title) + '</div><div class="book-author">by ' + esc(b.author) + '</div></div><div class="book-qty">📖 ' + b.quantity + '</div>' + actions + '</div>' + editPanel + '</div>';
+    }).join('');
 
-        <div class="edit-panel" id="edit-${b.id}">
-          <div class="edit-row">
-            <input id="et-${b.id}" value="${esc(b.title)}" />
-            <input id="ea-${b.id}" value="${esc(b.author)}" />
-            <input id="eq-${b.id}" type="number" value="${b.quantity}" />
-            <button class="btn btn-sm btn-save" onclick="updateBook(${b.id})">Save</button>
-          </div>
-        </div>
-      </div>
-    `).join('');
+    // Attach click handlers via event delegation
+    list.onclick = function (e) {
+      var editBtn   = e.target.closest('[data-edit]');
+      var deleteBtn = e.target.closest('[data-delete]');
+      var saveBtn   = e.target.closest('[data-save]');
+      if (editBtn)   { toggleEdit(editBtn.dataset.edit); }
+      if (deleteBtn) { askDelete(parseInt(deleteBtn.dataset.delete)); }
+      if (saveBtn)   { updateBook(parseInt(saveBtn.dataset.save)); }
+    };
   }
 
-  function esc(s) {
-    return s
-      .replace(/&/g,'&amp;')
-      .replace(/</g,'&lt;')
-      .replace(/>/g,'&gt;')
-      .replace(/"/g,'&quot;');
-  }
-
-  // ── UI Actions ────────────────────────────────────────
   function toggleEdit(id) {
-    document.querySelectorAll('.edit-panel').forEach(p => {
-      if (p.id !== `edit-${id}`) p.classList.remove('open');
+    document.querySelectorAll('.edit-panel').forEach(function (p) {
+      if (p.id !== 'edit-' + id) p.classList.remove('open');
     });
-    document.getElementById(`edit-${id}`).classList.toggle('open');
+    document.getElementById('edit-' + id).classList.toggle('open');
   }
 
   function askDelete(id) {
@@ -595,25 +600,20 @@
     document.getElementById('del-modal').classList.remove('open');
   }
 
-  document.getElementById('confirm-del').addEventListener('click', async () => {
-    if (deleteTarget !== null) {
-      await deleteBook(deleteTarget);
-      closeModal();
-    }
+  // ── EVENT LISTENERS ───────────────────────────────────
+  document.getElementById('login-btn').addEventListener('click', doLogin);
+  document.getElementById('logout-btn').addEventListener('click', doLogout);
+  document.getElementById('add-book-btn').addEventListener('click', addBook);
+  document.getElementById('cancel-del').addEventListener('click', closeModal);
+  document.getElementById('confirm-del').addEventListener('click', function () {
+    if (deleteTarget !== null) { deleteBook(deleteTarget); closeModal(); }
   });
 
-  // ── Search ────────────────────────────────────────────
-  document.getElementById('search-input').addEventListener('input', e => {
-    render(e.target.value);
-  });
+  document.getElementById('login-email').addEventListener('keydown', function (e) { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('login-pass').addEventListener('keydown',  function (e) { if (e.key === 'Enter') doLogin(); });
+  document.getElementById('search-input').addEventListener('input',  function (e) { render(e.target.value); });
 
-  // ── Enter to Add ──────────────────────────────────────
-  ['new-title','new-author','new-qty'].forEach(id => {
-    document.getElementById(id).addEventListener('keydown', e => {
-      if (e.key === 'Enter') addBook();
-    });
-  });
-
-  // ── Init ──────────────────────────────────────────────
-  loadBooks();
+}());
 </script>
+</body>
+</html>
